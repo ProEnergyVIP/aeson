@@ -438,7 +438,8 @@ unescapeString = do
      (eitherDecode "\"\\\" \\/ \\\\ \\b \\f \\n \\r \\t\"")
 
   forM_ [minBound .. maxBound :: Char] $ \ c ->
-    let s = LT.pack [c] in
+    -- The extra unpack+pack step is a workaround for https://github.com/ghcjs/ghcjs-base/issues/126
+    let s = LT.pack $ LT.unpack $ LT.pack [c] in
     assertEqual (printf "UTF-16 encoded '\\x%X'" c)
       (Right s) (eitherDecode $ utf16Char s)
   where
